@@ -1,0 +1,3 @@
+1. Extract the contents of the zip file to a folder on your hard drive. 
+2. In Maya, select the custom shelf on the toolbar and drag the "Installer_Poliigon_Material_Converter.mel" file from the extracted zip folder onto your main view port.
+3. A folder explorer will now open, then navigate to the extracted "Poliigon_Material_Converter" folder where the script is located and select this folder. The Poliigon icon will then appear in your custom shelf and is now ready to use.

@@ -1,0 +1,72 @@
+//  #### BEGIN GPL LICENSE BLOCK #####
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software Foundation,
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+//
+// ##### END GPL LICENSE BLOCK #####
+python("import os\n\
+import maya.cmds as mc\n\
+import maya.mel as mel\n\
+from shutil import copyfile\n\
+SCRIPT_PATH = os.path.join(mc.internalVar(usd=True), 'poliigon_material_converter')\n\
+ICON_PATH = mc.internalVar(ubd=True)\n\
+if not os.path.isdir(SCRIPT_PATH):\n\
+    os.makedirs(SCRIPT_PATH)\n\
+InstallerPath = mc.fileDialog2(ds=1, fm=2, cap='Select the downloaded folder.')\n\
+if InstallerPath == None:\n\
+    import sys\n\
+    sys.exit()\n\
+InstallerPath = InstallerPath[0]\n\
+pypPathsrc = os.path.join(InstallerPath, '__init__.py')\n\
+pypPathdst = os.path.join(SCRIPT_PATH, '__init__.py')\n\
+if not os.path.isfile(pypPathsrc):\n\
+  mc.confirmDialog(t='ERROR', m='The __init__.py file could not be found in the selected folder.', b='OK', icn='critical')\n\
+  sys.exit()\n\
+try:\n\
+    copyfile(pypPathsrc, pypPathdst)\n\
+except:\n\
+    mc.confirmDialog(t='ERROR', m='Failed to install the Poliigon Material Converter.\\n\The files could not be copied to ' + SCRIPT_PATH, b='OK', icn='critical')\n\
+    sys.exit()\n\
+for file in os.listdir(InstallerPath):\n\
+    if file.endswith('.png'):\n\
+		IconPathdst = os.path.join(ICON_PATH, file)\n\
+		IconPathsrc = os.path.join(InstallerPath , file)\n\
+		print IconPathdst\n\
+		print file\n\
+		#try:\n\
+		copyfile(IconPathsrc, IconPathdst)\n\
+		#except:\n\
+		#	pass\n\
+iconPath = mc.internalVar(ubd=True)\n\
+iconPath = os.path.join(iconPath, 'poliigon_icon.png')\n\
+print iconPath\n\
+gShelfTopLevel = mel.eval('global string $gShelfTopLevel; $temp = $gShelfTopLevel;')\n\
+currentShelf = mc.tabLayout(gShelfTopLevel,q=1,st=1)\n\
+shelfButtons = None\n\
+shelfButtons = mc.shelfLayout(currentShelf,q=1,ca=1)\n\
+exists = False\n\
+if shelfButtons != None:\n\
+  for button in shelfButtons:\n\
+      try:\n\
+          if mc.shelfButton(button, q=True, ann=True)=='Poliigon Material Converter':\n\
+              exists = True\n\
+      except:\n\
+          pass\n\
+if not exists:\n\
+    try:\n\
+        mc.shelfButton(parent=currentShelf, w=32, h=32, annotation='Poliigon Material Converter', label='Poliigon Material Converter', image1=iconPath, style='iconOnly', stp='python', command='import poliigon_material_converter\\nreload(poliigon_material_converter)\\npoliigon_material_converter.main()')\n\
+    except:\n\
+      mc.shelfButton(parent=currentShelf, w=32, h=32, annotation='Poliigon Material Converter', label='Poliigon Material Converter',style='iconAndTextVertical', image1='pythonFamily.png', stp='python', command='import poliigon_material_converter\\nreload(poliigon_material_converter)\\npoliigon_material_converter.main()')\n\
+else:\n\
+    mc.confirmDialog(t='Installer', m='Poliigon Material Converter has been updated.', b='OK')");
